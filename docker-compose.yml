@@ -1,0 +1,31 @@
+# The board, on demand.
+#
+#   docker compose up -d board      # before a session
+#   docker compose stop board       # after one
+#
+# It is not `restart: always` on purpose: the board is only interesting
+# while the game is running, and a stopped board is a quiet machine rather
+# than an empty document being served forever.
+
+services:
+  board:
+    build: .
+    image: anyaboard:latest
+    container_name: anyaboard
+    ports:
+      - "${BOARD_PORT:-8787}:8787"
+    volumes:
+      # The current state, so a restart mid-session keeps her body config.
+      # Delete the volume to start from schema/default_state.json.
+      - board_state:/app/board/data
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8787/health', timeout=3)"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+volumes:
+  board_state:

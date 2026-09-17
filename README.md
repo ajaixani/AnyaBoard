@@ -31,13 +31,21 @@ the JSON both ways.
 
 Two machines or one; the board just has to be reachable from the game PC.
 
-**1. The board** (any machine with Python 3.9+):
+**1. The board** (any machine the game PC can reach):
+
+```bash
+docker compose up -d board        # docker compose stop board when you're done
+```
+
+or without Docker:
 
 ```bash
 cd board
-uv sync                       # or: pip install fastapi uvicorn jsonschema
+uv sync                       # or: pip install -r requirements.txt
 uv run python main.py --host 0.0.0.0 --port 8787
 ```
+
+`curl http://<board-host>:8787/health` should answer.
 
 **2. The mod** (the game PC): copy `cet/AnyaBoard/` into
 
@@ -80,6 +88,7 @@ enough ahead, and joins your fights. Read it as the protocol in miniature.
 |---|---|
 | `cet/AnyaBoard/` | The mod. Install this folder in CET's `mods/` |
 | `board/` | The state board (FastAPI): one JSON document, plus what the game reports |
+| `Dockerfile`, `docker-compose.yml` | The board as a container, up only when you want it |
 | `relay/` | The Windows relay, both directions, in PowerShell |
 | `tools/boardctl.py` | Drive and watch the board from a terminal |
 | `tools/cet_harness.lua` | Runs the mod outside the game in a stubbed CET sandbox — 210 checks |
