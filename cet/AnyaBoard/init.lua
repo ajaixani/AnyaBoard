@@ -13,7 +13,12 @@
   DIRECT HTTP (does not work on stock CET — no sockets, io.popen stripped):
     useFile = false, boardUrl = "http://<board-host>:8787"
 
-  v0.6 — spawn / follow / combat (Grok + Gemini, flattened; untested in game):
+  v0.7 — perception: every 500ms the mod writes observed.json beside
+    state.json (where V is and which way, where this body is relative to
+    V, its health and attitude, what V is looking at) for the relay to
+    PUT to the board. Verified in game 2026-09-17, as is the executor.
+
+  v0.6 — spawn / follow / combat (Grok + Gemini, flattened):
     Record names are checked against TweakDB:GetRecord and refused loudly if
     no record exists, instead of spawning an id that never materialises.
     Whether that was the board-path bug is NOT established: a correct name
@@ -2748,7 +2753,7 @@ registerForEvent("onInit", function()
   AnyaBoard.updateErrCount = 0
   AnyaBoard._inited = true   -- FIRST. v0.3 set this last and died before it.
 
-  log("init — AnyaBoard v0.6 (spawn via GetRecord, follow distance, combat)")
+  log("init — AnyaBoard v0.7 (body + perception; writes observed.json)")
   logf("polling every %sms via engine delta on onUpdate",
     tostring(AnyaBoard.pollIntervalMs))
   logf("body control: enableBody=%s (the board can turn this on)",

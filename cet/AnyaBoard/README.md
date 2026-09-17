@@ -1,8 +1,13 @@
-# AnyaBoard — CET mod (v0.6)
+# AnyaBoard — CET mod (v0.7)
 
 Polls Anya state and drives a spawned body. Stock CET, no AMM.
 
-v0.6 (untested in game): record names are checked against `TweakDB:GetRecord` and
+v0.7 adds perception: every 500 ms it writes `observed.json` beside
+`state.json` — where the player is and which way they face, where this body
+is relative to them, its health and attitude, what the player is looking at —
+for the relay to send to the board. Verified in game.
+
+v0.6: record names are checked against `TweakDB:GetRecord` and
 refused loudly if missing; follow sets `desiredDistance` /
 `stopWhenDestinationReached=false`; combat marks the body friendly and sends a combat
 command at the look-at threat. Field names are guesses until `Dump` confirms them.

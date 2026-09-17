@@ -58,7 +58,7 @@ uv run python main.py --host 0.0.0.0 --port 8787
 folder** — then run it and leave it open. No Python needed on Windows.
 
 **4. In game:** load a save, open the CET console, **Reload all mods**.
-You should see `init — AnyaBoard v0.6` and then ticks.
+You should see `init — AnyaBoard v0.7` and then ticks.
 
 **5. Drive her** from the board machine:
 
