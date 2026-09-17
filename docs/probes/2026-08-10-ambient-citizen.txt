@@ -1,0 +1,45 @@
+[AnyaBoard] alive tick#2025 seq=36 mode=converse (heartbeat)
+[AnyaBoard] alive tick#2050 seq=36 mode=converse (heartbeat)
+[AnyaBoard] alive tick#2075 seq=36 mode=converse (heartbeat)
+[AnyaBoard] alive tick#2100 seq=36 mode=converse (heartbeat)
+> GetMod("AnyaBoard"):probeBody()
+[AnyaBoard] ========= BODY PROBE =========
+[AnyaBoard] player HAS     : GetWorldPosition, GetWorldOrientation, GetWorldForward, GetEntityID, GetDisplayName
+[AnyaBoard] player HAS     : IsNPC, IsPlayer, GetAIControllerComponent, QueueEvent
+[AnyaBoard] player missing : TeleportTo
+[AnyaBoard] TargetingSystem HAS : GetLookAtObject, GetObjectClosestToCrosshair, GetTargetParts
+[AnyaBoard] look-at: nothing acquired (look directly at an NPC and re-run)
+[AnyaBoard] TeleportationFacility HAS   : Teleport
+[AnyaBoard] TeleportationFacility missing : TeleportPlayerToPosition
+[AnyaBoard] WorkspotSystem HAS    : PlayInDevice, SendJumpToAnimEnt, StopInDevice, IsActorInWorkspot
+[AnyaBoard] SpatialQueriesSystem HAS     : SyncRaycastByCollisionGroup
+[AnyaBoard] SpatialQueriesSystem missing : GetNavmeshPointOnNearestGround
+[AnyaBoard] -- spawn paths --
+[AnyaBoard] exEntitySpawner HAS   : Spawn, SpawnRecord, Despawn
+[AnyaBoard] DynamicEntitySystem via container: not found
+[AnyaBoard] DynamicEntitySystem ? NOT AVAILABLE
+[AnyaBoard] PreventionSpawnSystem HAS    : (none)
+[AnyaBoard] PreventionSpawnSystem missing : RequestSpawn, RequestPreventionUnit, IsSpawnInProgress
+[AnyaBoard] Dump() available: true ? if true, Dump(Game.GetTeleportationFacility()) gives exact signatures
+[AnyaBoard] Paste this whole block back
+[AnyaBoard] ==========================
+[AnyaBoard] alive tick#2125 seq=36 mode=converse (heartbeat)
+> GetMod("AnyaBoard"):probeCaps()
+[AnyaBoard] ========= CAPABILITY PROBE =========
+[AnyaBoard] CET version: v1.37.1
+[AnyaBoard] globals present: Game:userdata, GetMod:function, GetSingleton:function, NewObject:function
+[AnyaBoard] globals present: ToVariant:function, FromVariant:function, TweakDBID:table, TweakDB:userdata, CName:table
+[AnyaBoard] globals present: Vector4:table, Quaternion:table, EulerAngles:table, WorldTransform:userdata
+[AnyaBoard] globals present: WorldPosition:userdata, GetAllBlackboardDefs:function, exEntitySpawner:userdata
+[AnyaBoard] globals present: GetVersion:function, Dump:function, GameDump:function, SimpleScreenMessage:userdata
+[AnyaBoard] globals ABSENT : DynamicEntitySpec, registerHotkey
+[AnyaBoard] systems LIVE : GetPreventionSpawnSystem, GetTeleportationFacility, GetTargetingSystem
+[AnyaBoard] systems LIVE : GetSpatialQueriesSystem, GetPlayerSystem, GetBlackboardSystem, GetDelaySystem
+[AnyaBoard] systems LIVE : GetQuestsSystem, GetWorkspotSystem, GetSceneSystem, GetTransactionSystem
+[AnyaBoard] systems LIVE : GetStatPoolsSystem, GetPhotoModeSystem
+[AnyaBoard] systems absent : GetDynamicEntitySystem
+[AnyaBoard] world read: player at x=-666.53 y=651.17 z=33.51
+[AnyaBoard] AMM: not installed (fine ? see systems LIVE above for the native path)
+[AnyaBoard] Paste this whole block back to whoever is wiring the executor.
+[AnyaBoard] =================================
+[AnyaBoard] alive tick#2150 seq=36 mode=converse (heartbeat)

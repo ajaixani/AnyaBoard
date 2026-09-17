@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Board runtime state (regenerated from schema/default_state.json)
+board/data/
+
+# Written in the mod folder at runtime, by the relay and the mod
+cet/AnyaBoard/state.json
+cet/AnyaBoard/state.json.tmp
+cet/AnyaBoard/observed.json
+cet/AnyaBoard/bench.log
+
+# Harness scratch
+.cet_test/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp

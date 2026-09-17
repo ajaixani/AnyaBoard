@@ -1,0 +1,6 @@
+# P2 first observations, 2026-09-17 ~13:25 (boardctl watch, 1s sampling)
+# sources: attitude=attitude-agent health=statpools player_combat=psm-blackboard view=camera
+# first raw observation:
+{"board_seq":79,"body":{"attitude":"friendly","bearing":1.374,"dead":false,"distance":3.373,"dz":0.0,"heading":-1.78,"health":100,"live":true,"mode":"follow","name":"Judy","pos":[-1285.391,1510.266,45.001],"record":"Character.Judy"},"clock":34.783,"frame":1669,"player":{"heading":0.01,"in_combat":false,"pos":[-1286.017,1506.952,45.001],"view_heading":0.01},"sources":{"attitude":"attitude-agent","health":"statpools","player_combat":"psm-blackboard","view":"camera"},"v":1}
+# check: dx=0.626 dy=3.314 -> 3.373 m, atan2=1.384 - heading 0.010 = 1.374 rad (matches)
+# left test 2026-09-17: Judy on V's left -> bearing +90 deg at 3.4 m (view_heading +83 deg). Sign convention confirmed: + left, - right.

@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "timestamp": 0,
+  "seq": 0,
+  "mode": "idle",
+  "body": "panam",
+  "target": {
+    "type": "none",
+    "value": null
+  },
+  "dialogue": {
+    "text": "",
+    "emotion": "",
+    "timeout": 8.0,
+    "seq": 0
+  },
+  "flags": {},
+  "memory_delta": [],
+  "goal": "",
+  "attention": "",
+  "animation": ""
+}

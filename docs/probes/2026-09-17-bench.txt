@@ -1,0 +1,350 @@
+[AnyaBoard] ======== BENCH ========
+[AnyaBoard] CET v1.37.1  tick=2476 frame=55972
+[AnyaBoard] -- id equivalence --
+[AnyaBoard]   inspected record name: Character.mq024_sandra_combatable
+[AnyaBoard]   TweakDBID.new(name) == inspected userdata: SAME
+[AnyaBoard] -- command classes --
+[AnyaBoard] ---- Dump(AIFollowTargetCommand) ----
+{
+	name: AIFollowTargetCommand,
+	functions: {
+		Copy() => (handle:AICommand) # Hash:(3687049D1AF562C4) / ShortName:(Copy) Hash:(3687049D1AF562C4,
+		GetCategory() => (CName) # Hash:(37DB4AB6503582EB) / ShortName:(GetCategory) Hash:(37DB4AB6503582EB,
+		SetCategory(value: CName) # Hash:(1D56B7BA2AC39C07) / ShortName:(SetCategory) Hash:(1D56B7BA2AC39C07,
+		ToString() => (String) # Hash:(A2364D0872EBFAA5) / ShortName:(ToString) Hash:(A2364D0872EBFAA5,
+		GetClassName() => (CName) # Hash:(2F024AE0D0EC1D92) / ShortName:(GetClassName) Hash:(2F024AE0D0EC1D92,
+		IsA(className: CName) => (Bool) # Hash:(41D54019C9B3479C) / ShortName:(IsA) Hash:(41D54019C9B3479C,
+		IsExactlyA(className: CName) => (Bool) # Hash:(66E4628D794438E6) / ShortName:(IsExactlyA) Hash:(66E4628D794438E6,
+	},
+	staticFunctions: {
+		DetectScriptableCycles() # Hash:(69B4E7DDE330E93A) / ShortName:(DetectScriptableCycles) Hash:(69B4E7DDE330E93A,
+	},
+	properties: {
+		target: whandle:gameObject,
+		desiredDistance: Float,
+		tolerance: Float,
+		stopWhenDestinationReached: Bool,
+		movementType: moveMovementType,
+		lookAtTarget: whandle:gameObject,
+		matchSpeed: Bool,
+		teleport: Bool,
+		removeAfterCombat: Bool,
+		ignoreInCombat: Bool,
+		alwaysUseStealth: Bool,
+		id: Uint32,
+		state: AICommandState,
+		questBlockId: Uint64,
+		category: CName,
+	}
+}
+[AnyaBoard] ---- end AIFollowTargetCommand ----
+[AnyaBoard] AIFollowCommand: no such class
+[AnyaBoard] ---- Dump(AIFollowerCommand) ----
+{
+	name: AIFollowerCommand,
+	functions: {
+		IsCombatCommand() => (Bool) # Hash:(F7FC54AFBEAD5EDF) / ShortName:(IsCombatCommand) Hash:(8AFBA6A820CE601E,
+		Copy() => (handle:AICommand) # Hash:(3687049D1AF562C4) / ShortName:(Copy) Hash:(3687049D1AF562C4,
+		GetCategory() => (CName) # Hash:(37DB4AB6503582EB) / ShortName:(GetCategory) Hash:(37DB4AB6503582EB,
+		SetCategory(value: CName) # Hash:(1D56B7BA2AC39C07) / ShortName:(SetCategory) Hash:(1D56B7BA2AC39C07,
+		ToString() => (String) # Hash:(A2364D0872EBFAA5) / ShortName:(ToString) Hash:(A2364D0872EBFAA5,
+		GetClassName() => (CName) # Hash:(2F024AE0D0EC1D92) / ShortName:(GetClassName) Hash:(2F024AE0D0EC1D92,
+		IsA(className: CName) => (Bool) # Hash:(41D54019C9B3479C) / ShortName:(IsA) Hash:(41D54019C9B3479C,
+		IsExactlyA(className: CName) => (Bool) # Hash:(66E4628D794438E6) / ShortName:(IsExactlyA) Hash:(66E4628D794438E6,
+	},
+	staticFunctions: {
+		DetectScriptableCycles() # Hash:(69B4E7DDE330E93A) / ShortName:(DetectScriptableCycles) Hash:(69B4E7DDE330E93A,
+	},
+	properties: {
+		combatCommand: Bool,
+		id: Uint32,
+		state: AICommandState,
+		questBlockId: Uint64,
+		category: CName,
+	}
+}
+[AnyaBoard] ---- end AIFollowerCommand ----
+[AnyaBoard] ---- Dump(AIHoldPositionCommand) ----
+{
+	name: AIHoldPositionCommand,
+	functions: {
+		Copy() => (handle:AICommand) # Hash:(3687049D1AF562C4) / ShortName:(Copy) Hash:(3687049D1AF562C4,
+		GetCategory() => (CName) # Hash:(37DB4AB6503582EB) / ShortName:(GetCategory) Hash:(37DB4AB6503582EB,
+		SetCategory(value: CName) # Hash:(1D56B7BA2AC39C07) / ShortName:(SetCategory) Hash:(1D56B7BA2AC39C07,
+		ToString() => (String) # Hash:(A2364D0872EBFAA5) / ShortName:(ToString) Hash:(A2364D0872EBFAA5,
+		GetClassName() => (CName) # Hash:(2F024AE0D0EC1D92) / ShortName:(GetClassName) Hash:(2F024AE0D0EC1D92,
+		IsA(className: CName) => (Bool) # Hash:(41D54019C9B3479C) / ShortName:(IsA) Hash:(41D54019C9B3479C,
+		IsExactlyA(className: CName) => (Bool) # Hash:(66E4628D794438E6) / ShortName:(IsExactlyA) Hash:(66E4628D794438E6,
+	},
+	staticFunctions: {
+		DetectScriptableCycles() # Hash:(69B4E7DDE330E93A) / ShortName:(DetectScriptableCycles) Hash:(69B4E7DDE330E93A,
+	},
+	properties: {
+		duration: Float,
+		removeAfterCombat: Bool,
+		ignoreInCombat: Bool,
+		alwaysUseStealth: Bool,
+		id: Uint32,
+		state: AICommandState,
+		questBlockId: Uint64,
+		category: CName,
+	}
+}
+[AnyaBoard] ---- end AIHoldPositionCommand ----
+[AnyaBoard] AIHoldCommand: no such class
+[AnyaBoard] ---- Dump(AIMoveToCommand) ----
+{
+	name: AIMoveToCommand,
+	functions: {
+		Copy() => (handle:AICommand) # Hash:(3687049D1AF562C4) / ShortName:(Copy) Hash:(3687049D1AF562C4,
+		GetCategory() => (CName) # Hash:(37DB4AB6503582EB) / ShortName:(GetCategory) Hash:(37DB4AB6503582EB,
+		SetCategory(value: CName) # Hash:(1D56B7BA2AC39C07) / ShortName:(SetCategory) Hash:(1D56B7BA2AC39C07,
+		ToString() => (String) # Hash:(A2364D0872EBFAA5) / ShortName:(ToString) Hash:(A2364D0872EBFAA5,
+		GetClassName() => (CName) # Hash:(2F024AE0D0EC1D92) / ShortName:(GetClassName) Hash:(2F024AE0D0EC1D92,
+		IsA(className: CName) => (Bool) # Hash:(41D54019C9B3479C) / ShortName:(IsA) Hash:(41D54019C9B3479C,
+		IsExactlyA(className: CName) => (Bool) # Hash:(66E4628D794438E6) / ShortName:(IsExactlyA) Hash:(66E4628D794438E6,
+	},
+	staticFunctions: {
+		DetectScriptableCycles() # Hash:(69B4E7DDE330E93A) / ShortName:(DetectScriptableCycles) Hash:(69B4E7DDE330E93A,
+	},
+	properties: {
+		movementTarget: AIPositionSpec,
+		rotateEntityTowardsFacingTarget: Bool,
+		facingTarget: AIPositionSpec,
+		movementType: moveMovementType,
+		ignoreNavigation: Bool,
+		useStart: Bool,
+		useStop: Bool,
+		desiredDistanceFromTarget: Float,
+		finishWhenDestinationReached: Bool,
+		removeAfterCombat: Bool,
+		ignoreInCombat: Bool,
+		alwaysUseStealth: Bool,
+		id: Uint32,
+		state: AICommandState,
+		questBlockId: Uint64,
+		category: CName,
+	}
+}
+[AnyaBoard] ---- end AIMoveToCommand ----
+[AnyaBoard] ---- Dump(AIMoveOnSplineCommand) ----
+{
+	name: AIMoveOnSplineCommand,
+	functions: {
+		Copy() => (handle:AICommand) # Hash:(3687049D1AF562C4) / ShortName:(Copy) Hash:(3687049D1AF562C4,
+		GetCategory() => (CName) # Hash:(37DB4AB6503582EB) / ShortName:(GetCategory) Hash:(37DB4AB6503582EB,
+		SetCategory(value: CName) # Hash:(1D56B7BA2AC39C07) / ShortName:(SetCategory) Hash:(1D56B7BA2AC39C07,
+		ToString() => (String) # Hash:(A2364D0872EBFAA5) / ShortName:(ToString) Hash:(A2364D0872EBFAA5,
+		GetClassName() => (CName) # Hash:(2F024AE0D0EC1D92) / ShortName:(GetClassName) Hash:(2F024AE0D0EC1D92,
+		IsA(className: CName) => (Bool) # Hash:(41D54019C9B3479C) / ShortName:(IsA) Hash:(41D54019C9B3479C,
+		IsExactlyA(className: CName) => (Bool) # Hash:(66E4628D794438E6) / ShortName:(IsExactlyA) Hash:(66E4628D794438E6,
+	},
+	staticFunctions: {
+		DetectScriptableCycles() # Hash:(69B4E7DDE330E93A) / ShortName:(DetectScriptableCycles) Hash:(69B4E7DDE330E93A,
+	},
+	properties: {
+		spline: NodeRef,
+		movementType: AIMovementTypeSpec,
+		rotateEntityTowardsFacingTarget: Bool,
+		facingTarget: whandle:gameObject,
+		shootingTarget: whandle:gameObject,
+		companion: whandle:gameObject,
+		desiredDistance: Float,
+		deadZoneRadius: Float,
+		catchUpWithCompanion: Bool,
+		teleportToCompanion: Bool,
+		useMatchForSpeedForPlayer: Bool,
+		startFromClosestPoint: Bool,
+		splineRecalculation: Bool,
+		ignoreNavigation: Bool,
+		snapToTerrain: Bool,
+		ignoreLineOfSightCheck: Bool,
+		useAlertedState: Bool,
+		useStart: Bool,
+		useStop: Bool,
+		useCombatState: Bool,
+		reverse: Bool,
+		useOMLReservation: Bool,
+		disableFootIK: Bool,
+		allowCrowdOnPath: Bool,
+		lookAtTarget: whandle:gameObject,
+		minSearchAngle: Float,
+		maxSearchAngle: Float,
+		noWaitToEndDistance: Float,
+		noWaitToEndCompanionDistance: Float,
+		maxCompanionDistanceOnSpline: Float,
+		removeAfterCombat: Bool,
+		ignoreInCombat: Bool,
+		alwaysUseStealth: Bool,
+		id: Uint32,
+		state: AICommandState,
+		questBlockId: Uint64,
+		category: CName,
+	}
+}
+[AnyaBoard] ---- end AIMoveOnSplineCommand ----
+[AnyaBoard] ---- Dump(AIInjectCombatTargetCommand) ----
+{
+	name: AIInjectCombatTargetCommand,
+	functions: {
+		Copy() => (handle:AICommand) # Hash:(3687049D1AF562C4) / ShortName:(Copy) Hash:(3687049D1AF562C4,
+		GetCategory() => (CName) # Hash:(37DB4AB6503582EB) / ShortName:(GetCategory) Hash:(37DB4AB6503582EB,
+		SetCategory(value: CName) # Hash:(1D56B7BA2AC39C07) / ShortName:(SetCategory) Hash:(1D56B7BA2AC39C07,
+		ToString() => (String) # Hash:(A2364D0872EBFAA5) / ShortName:(ToString) Hash:(A2364D0872EBFAA5,
+		GetClassName() => (CName) # Hash:(2F024AE0D0EC1D92) / ShortName:(GetClassName) Hash:(2F024AE0D0EC1D92,
+		IsA(className: CName) => (Bool) # Hash:(41D54019C9B3479C) / ShortName:(IsA) Hash:(41D54019C9B3479C,
+		IsExactlyA(className: CName) => (Bool) # Hash:(66E4628D794438E6) / ShortName:(IsExactlyA) Hash:(66E4628D794438E6,
+	},
+	staticFunctions: {
+		DetectScriptableCycles() # Hash:(69B4E7DDE330E93A) / ShortName:(DetectScriptableCycles) Hash:(69B4E7DDE330E93A,
+	},
+	properties: {
+		targetNodeRef: NodeRef,
+		targetPuppetRef: gameEntityReference,
+		duration: Float,
+		immediately: Bool,
+		id: Uint32,
+		state: AICommandState,
+		questBlockId: Uint64,
+		category: CName,
+	}
+}
+[AnyaBoard] ---- end AIInjectCombatTargetCommand ----
+[AnyaBoard] AICombatTargetCommand: no such class
+[AnyaBoard] AICombatCommand: no such class
+[AnyaBoard] -- spawn cases --
+[AnyaBoard] record check: Character.Judy — exists
+[AnyaBoard]   entityTemplatePath = userdata: 0x02446308c8c8 <userdata>
+[AnyaBoard]   appearanceName     = ToCName{ hash_lo = 0x00000000, hash_hi = 0x00000000 --[[ None --]] } <userdata
+[AnyaBoard]   appearanceName     = >
+[AnyaBoard] record check: Character.Panam — exists
+[AnyaBoard]   entityTemplatePath = userdata: 0x02687a61d590 <userdata>
+[AnyaBoard]   appearanceName     = ToCName{ hash_lo = 0x00000000, hash_hi = 0x00000000 --[[ None --]] } <userdata
+[AnyaBoard]   appearanceName     = >
+[AnyaBoard]   1. inspected record (userdata)
+[AnyaBoard]   2. tiger claw (name)
+[AnyaBoard]   3. Character.Judy (record)
+[AnyaBoard]   4. Character.Judy (record+appearance)
+[AnyaBoard]   5. Character.Judy (template+appearance)
+[AnyaBoard]   6. Character.Panam (record)
+[AnyaBoard]   7. Character.Panam (record+appearance)
+[AnyaBoard]   8. Character.Panam (template+appearance)
+[AnyaBoard] close the console now; results arrive over ~1 minute per few cases
+[AnyaBoard] [1/8] inspected record (userdata)
+[AnyaBoard]   spawn call returned via SpawnRecord(userdata) id=userdata: 0x02687a61e920
+[AnyaBoard]   RESOLVED after 2 frames / 0.04s
+[AnyaBoard]   body.GetRecordID = ToTweakDBID{ hash = 0xFED8BC69, length = 33 --[[ Character.mq024_sandra_combatab
+[AnyaBoard]   body.GetRecordID = le --]] } <userdata>
+[AnyaBoard]   body.GetCurrentAppearanceName = ToCName{ hash_lo = 0xEA103728, hash_hi = 0x5049A859 --[[ sandra_dor
+[AnyaBoard]   body.GetCurrentAppearanceName = set__q000__sandra_dorset --]] } <userdata>
+[AnyaBoard]   body.GetDisplayName = "LocKey#46944"
+[AnyaBoard]   body.IsDead = false
+[AnyaBoard]   body.GetWorldPosition = (-1272.68, 1510.46, 44.49) <userdata>
+[AnyaBoard]   AI controller: yes
+[AnyaBoard]   record name: Character.mq024_sandra_combatable
+[AnyaBoard]   despawn confirmed
+[AnyaBoard] [2/8] tiger claw (name)
+[AnyaBoard]   spawn call returned via SpawnRecord(TweakDB:GetRecord) id=userdata: 0x02687a63d428
+[AnyaBoard]   RESOLVED after 5 frames / 0.11s
+[AnyaBoard]   body.GetRecordID = ToTweakDBID{ hash = 0xE295F4AE, length = 50 --[[ Character.jpn_tyger_claws_gangs
+[AnyaBoard]   body.GetRecordID = ter1_ranged1_nue_ma --]] } <userdata>
+[AnyaBoard]   body.GetCurrentAppearanceName = ToCName{ hash_lo = 0x4E26D1FD, hash_hi = 0xD5CE2496 --[[ gang__tyge
+[AnyaBoard]   body.GetCurrentAppearanceName = r_ma_gangster__lvl1_03 --]] } <userdata>
+[AnyaBoard]   body.GetDisplayName = "NC Resident"
+[AnyaBoard]   body.IsDead = false
+[AnyaBoard]   body.GetWorldPosition = (-1272.68, 1510.46, 44.49) <userdata>
+[AnyaBoard]   AI controller: yes
+[AnyaBoard]   record name: Character.jpn_tyger_claws_gangster1_ranged1_nue_ma
+[AnyaBoard] alive tick#2500 seq=69 mode=idle (heartbeat)
+[AnyaBoard]   despawn confirmed
+[AnyaBoard] [3/8] Character.Judy (record)
+[AnyaBoard]   spawn call returned via SpawnRecord(TweakDB:GetRecord) id=userdata: 0x0268795b56f0
+[AnyaBoard]   RESOLVED after 4 frames / 0.09s
+[AnyaBoard]   body.GetRecordID = ToTweakDBID{ hash = 0xB1B50FFA, length = 14 --[[ Character.Judy --]] } <userdata
+[AnyaBoard]   body.GetRecordID = >
+[AnyaBoard]   body.GetCurrentAppearanceName = ToCName{ hash_lo = 0xFE01074C, hash_hi = 0x1438DB09 --[[ judy_divin
+[AnyaBoard]   body.GetCurrentAppearanceName = g_suit_mask --]] } <userdata>
+[AnyaBoard]   body.GetDisplayName = "LocKey#47008"
+[AnyaBoard]   body.IsDead = false
+[AnyaBoard]   body.GetWorldPosition = (-1272.68, 1510.46, 44.49) <userdata>
+[AnyaBoard]   AI controller: yes
+[AnyaBoard]   record name: Character.Judy
+[AnyaBoard] alive tick#2525 seq=69 mode=idle (heartbeat)
+[AnyaBoard]   despawn confirmed
+[AnyaBoard] [4/8] Character.Judy (record+appearance)
+[AnyaBoard]   spawn call returned via SpawnRecord(id, app) id=userdata: 0x0268794628d0
+[AnyaBoard]   RESOLVED after 4 frames / 0.09s
+[AnyaBoard]   body.GetRecordID = ToTweakDBID{ hash = 0xB1B50FFA, length = 14 --[[ Character.Judy --]] } <userdata
+[AnyaBoard]   body.GetRecordID = >
+[AnyaBoard]   body.GetCurrentAppearanceName = ToCName{ hash_lo = 0xAD06F395, hash_hi = 0xCBF409EC --[[ judy_defau
+[AnyaBoard]   body.GetCurrentAppearanceName = lt --]] } <userdata>
+[AnyaBoard]   body.GetDisplayName = "LocKey#47008"
+[AnyaBoard]   body.IsDead = false
+[AnyaBoard]   body.GetWorldPosition = (-1272.68, 1510.46, 44.49) <userdata>
+[AnyaBoard]   AI controller: yes
+[AnyaBoard]   record name: Character.Judy
+[AnyaBoard]   despawn confirmed
+[AnyaBoard] [5/8] Character.Judy (template+appearance)
+[AnyaBoard]   spawn call returned via Spawn(tpl, app) id=userdata: 0x026879338618
+[AnyaBoard]   RESOLVED after 4 frames / 0.09s
+[AnyaBoard]   body.GetRecordID = ToTweakDBID{ hash = 0x00000000, length = 0 } <userdata>
+[AnyaBoard]   body.GetCurrentAppearanceName = ToCName{ hash_lo = 0xAD06F395, hash_hi = 0xCBF409EC --[[ judy_defau
+[AnyaBoard]   body.GetCurrentAppearanceName = lt --]] } <userdata>
+[AnyaBoard]   body.GetDisplayName = "LocKey#47008"
+[AnyaBoard]   body.IsDead = false
+[AnyaBoard]   body.GetWorldPosition = (-1277.69, 1513.71, 44.49) <userdata>
+[AnyaBoard]   AI controller: yes
+[AnyaBoard]   record name: nil
+[AnyaBoard] alive tick#2550 seq=69 mode=idle (heartbeat)
+[AnyaBoard]   despawn confirmed
+[AnyaBoard] [6/8] Character.Panam (record)
+[AnyaBoard]   spawn call returned via SpawnRecord(TweakDB:GetRecord) id=userdata: 0x026863c30fc0
+[AnyaBoard]   RESOLVED after 6 frames / 0.15s
+[AnyaBoard]   body.GetRecordID = ToTweakDBID{ hash = 0xC67F0E01, length = 15 --[[ Character.Panam --]] } <userdat
+[AnyaBoard]   body.GetRecordID = a>
+[AnyaBoard]   body.GetCurrentAppearanceName = ToCName{ hash_lo = 0xC92F9BBA, hash_hi = 0x7FD16DF0 --[[ panam__q20
+[AnyaBoard]   body.GetCurrentAppearanceName = 3__shower --]] } <userdata>
+[AnyaBoard]   body.GetDisplayName = "LocKey#46999"
+[AnyaBoard]   body.IsDead = false
+[AnyaBoard]   body.GetWorldPosition = (-1278.07, 1518.07, 45.00) <userdata>
+[AnyaBoard]   AI controller: yes
+[AnyaBoard]   record name: Character.Panam
+[AnyaBoard] alive tick#2575 seq=69 mode=idle (heartbeat)
+[AnyaBoard]   despawn confirmed
+[AnyaBoard] [7/8] Character.Panam (record+appearance)
+[AnyaBoard]   spawn call returned via SpawnRecord(id, app) id=userdata: 0x0268634f6d48
+[AnyaBoard]   RESOLVED after 5 frames / 0.12s
+[AnyaBoard]   body.GetRecordID = ToTweakDBID{ hash = 0xC67F0E01, length = 15 --[[ Character.Panam --]] } <userdat
+[AnyaBoard]   body.GetRecordID = a>
+[AnyaBoard]   body.GetCurrentAppearanceName = ToCName{ hash_lo = 0x68B64C14, hash_hi = 0xA3A4EBD7 --[[ panam_defa
+[AnyaBoard]   body.GetCurrentAppearanceName = ult --]] } <userdata>
+[AnyaBoard]   body.GetDisplayName = "LocKey#46999"
+[AnyaBoard]   body.IsDead = false
+[AnyaBoard]   body.GetWorldPosition = (-1275.90, 1519.84, 45.00) <userdata>
+[AnyaBoard]   AI controller: yes
+[AnyaBoard]   record name: Character.Panam
+[AnyaBoard]   despawn confirmed
+[AnyaBoard] [8/8] Character.Panam (template+appearance)
+[AnyaBoard]   spawn call returned via Spawn(tpl, app) id=userdata: 0x02682d4baad8
+[AnyaBoard]   RESOLVED after 4 frames / 0.09s
+[AnyaBoard]   body.GetRecordID = ToTweakDBID{ hash = 0x00000000, length = 0 } <userdata>
+[AnyaBoard]   body.GetCurrentAppearanceName = ToCName{ hash_lo = 0x68B64C14, hash_hi = 0xA3A4EBD7 --[[ panam_defa
+[AnyaBoard]   body.GetCurrentAppearanceName = ult --]] } <userdata>
+[AnyaBoard]   body.GetDisplayName = "LocKey#46999"
+[AnyaBoard]   body.IsDead = false
+[AnyaBoard]   body.GetWorldPosition = (-1276.01, 1519.59, 45.00) <userdata>
+[AnyaBoard]   AI controller: yes
+[AnyaBoard]   record name: nil
+[AnyaBoard] alive tick#2600 seq=69 mode=idle (heartbeat)
+[AnyaBoard]   despawn confirmed
+[AnyaBoard] -- SUMMARY --
+[AnyaBoard]   resolved  secs   ai   gone  case
+[AnyaBoard]   yes       0.04   yes  yes   inspected record (userdata)
+[AnyaBoard]   yes       0.11   yes  yes   tiger claw (name)
+[AnyaBoard]   yes       0.09   yes  yes   Character.Judy (record)
+[AnyaBoard]   yes       0.09   yes  yes   Character.Judy (record+appearance)
+[AnyaBoard]   yes       0.09   yes  yes   Character.Judy (template+appearance)
+[AnyaBoard]   yes       0.15   yes  yes   Character.Panam (record)
+[AnyaBoard]   yes       0.12   yes  yes   Character.Panam (record+appearance)
+[AnyaBoard]   yes       0.09   yes  yes   Character.Panam (template+appearance)
+[AnyaBoard] ======== END BENCH ========

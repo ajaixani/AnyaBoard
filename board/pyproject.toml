@@ -1,0 +1,13 @@
+[project]
+name = "anyaboard"
+version = "0.1.0"
+description = "AnyaBoard state board — the service a Cyberpunk 2077 drone body reads and reports to"
+requires-python = ">=3.9"
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.30.0",
+  "jsonschema>=4.23.0",
+]
+
+[tool.uv]
+package = false

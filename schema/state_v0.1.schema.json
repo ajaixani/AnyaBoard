@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cyberstatemachine.local/schema/state_v0.1.schema.json",
+  "title": "AnyaStateV01",
+  "description": "v0.1 shared state board schema. State machine = Anya. Panam = current drone.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "timestamp", "mode", "target", "dialogue", "flags", "memory_delta", "goal", "attention"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Schema version. Bump only on breaking changes."
+    },
+    "timestamp": {
+      "type": "number",
+      "description": "Unix epoch seconds (float ok). Updated on every successful write."
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["idle", "follow", "move_to", "hold", "combat", "converse", "spawn", "despawn"],
+      "description": "High-level drone mode. Mirrors AMM/companion commands the game can execute."
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "value"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["none", "player", "position", "entity"],
+          "description": "What the current mode is aimed at."
+        },
+        "value": {
+          "description": "null for none/player; [x,y,z] for position; entity id/string for entity.",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 3,
+              "maxItems": 3
+            },
+            { "type": "string" },
+            { "type": "integer" }
+          ]
+        }
+      }
+    },
+    "dialogue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "emotion", "timeout", "seq"],
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Line for the body to speak / display. Empty = no active line."
+        },
+        "emotion": {
+          "type": "string",
+          "description": "Optional emotion/voice tag for later animation or TTS mapping."
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Seconds the line should remain active before clearing."
+        },
+        "seq": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Monotonic dialogue sequence. Game executor only speaks when seq changes."
+        }
+      }
+    },
+    "flags": {
+      "type": "object",
+      "description": "Loose event bits. Game or heuristics set/clear; agent may read.",
+      "additionalProperties": {
+        "oneOf": [
+          { "type": "boolean" },
+          { "type": "string" },
+          { "type": "number" },
+          { "type": "null" }
+        ]
+      }
+    },
+    "memory_delta": {
+      "type": "array",
+      "description": "Small facts the agent wants stored or forgotten. Consumed by memory layer.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["op", "key", "value"],
+        "properties": {
+          "op": { "type": "string", "enum": ["set", "forget"] },
+          "key": { "type": "string" },
+          "value": {}
+        }
+      }
+    },
+    "goal": {
+      "type": "string",
+      "description": "Human-readable current goal for heuristics and agent context."
+    },
+    "attention": {
+      "type": "string",
+      "description": "What she is currently attending to (player, threat, object, etc.)."
+    },
+    "body": {
+      "type": "string",
+      "description": "Current drone identity. Default panam.",
+      "default": "panam"
+    },
+    "animation": {
+      "type": "string",
+      "description": "Optional pose/animation name the game side already understands."
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Monotonic board revision. Incremented on every successful write."
+    }
+  }
+}

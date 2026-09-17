@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  mod:
+    name: the mod, in a stubbed CET sandbox
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y lua5.4
+      # The worst case CET can present: io chrooted, no io.popen, no json,
+      # no debug. Then the friendlier one, which must also pass.
+      - run: lua5.4 tools/cet_harness.lua cet/AnyaBoard/init.lua
+      - run: lua5.4 tools/cet_harness.lua cet/AnyaBoard/init.lua --with-json --with-debug
+
+  board:
+    name: the board's wire
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install fastapi uvicorn jsonschema httpx httpx2
+      - run: python tools/smoke_board.py
+      - run: python -c "import ast,pathlib; [ast.parse(p.read_text()) for p in pathlib.Path('.').rglob('*.py')]"

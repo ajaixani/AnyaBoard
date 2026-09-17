@@ -1,0 +1,45 @@
+[AnyaBoard] alive tick#1600 seq=36 mode=converse (heartbeat)
+[AnyaBoard] alive tick#1625 seq=36 mode=converse (heartbeat)
+> GetMod("AnyaBoard"):probeCaps()
+[AnyaBoard] ========= CAPABILITY PROBE =========
+[AnyaBoard] CET version: v1.37.1
+[AnyaBoard] globals present: Game:userdata, GetMod:function, GetSingleton:function, NewObject:function
+[AnyaBoard] globals present: ToVariant:function, FromVariant:function, TweakDBID:table, TweakDB:userdata, CName:table
+[AnyaBoard] globals present: Vector4:table, Quaternion:table, EulerAngles:table, WorldTransform:userdata
+[AnyaBoard] globals present: WorldPosition:userdata, GetAllBlackboardDefs:function, exEntitySpawner:userdata
+[AnyaBoard] globals present: GetVersion:function, Dump:function, GameDump:function, SimpleScreenMessage:userdata
+[AnyaBoard] globals ABSENT : DynamicEntitySpec, registerHotkey
+[AnyaBoard] systems LIVE : GetPreventionSpawnSystem, GetTeleportationFacility, GetTargetingSystem
+[AnyaBoard] systems LIVE : GetSpatialQueriesSystem, GetPlayerSystem, GetBlackboardSystem, GetDelaySystem
+[AnyaBoard] systems LIVE : GetQuestsSystem, GetWorkspotSystem, GetSceneSystem, GetTransactionSystem
+[AnyaBoard] systems LIVE : GetStatPoolsSystem, GetPhotoModeSystem
+[AnyaBoard] systems absent : GetDynamicEntitySystem
+[AnyaBoard] world read: player at x=-668.26 y=509.70 z=18.30
+[AnyaBoard] AMM: not installed (fine ? see systems LIVE above for the native path)
+[AnyaBoard] Paste this whole block back to whoever is wiring the executor.
+[AnyaBoard] =================================
+[AnyaBoard] alive tick#1650 seq=36 mode=converse (heartbeat)
+> GetMod("AnyaBoard"):probeBody()
+[AnyaBoard] ========= BODY PROBE =========
+[AnyaBoard] player HAS     : GetWorldPosition, GetWorldOrientation, GetWorldForward, GetEntityID, GetDisplayName
+[AnyaBoard] player HAS     : IsNPC, IsPlayer, GetAIControllerComponent, QueueEvent
+[AnyaBoard] player missing : TeleportTo
+[AnyaBoard] TargetingSystem HAS : GetLookAtObject, GetObjectClosestToCrosshair, GetTargetParts
+[AnyaBoard] look-at ACQUIRED: Shishido Shun at x=-660.44 y=520.67 z=18.32
+[AnyaBoard] acquired npc HAS    : GetEntityID, GetWorldPosition, IsNPC, IsDead, GetAIControllerComponent, QueueEvent
+[AnyaBoard] acquired npc HAS    : GetNPCType
+[AnyaBoard] acquired npc missing : TeleportTo, SetAttitudeTowardsPlayer
+[AnyaBoard] TeleportationFacility HAS   : Teleport
+[AnyaBoard] TeleportationFacility missing : TeleportPlayerToPosition
+[AnyaBoard] WorkspotSystem HAS    : PlayInDevice, SendJumpToAnimEnt, StopInDevice, IsActorInWorkspot
+[AnyaBoard] SpatialQueriesSystem HAS     : SyncRaycastByCollisionGroup
+[AnyaBoard] SpatialQueriesSystem missing : GetNavmeshPointOnNearestGround
+[AnyaBoard] -- spawn paths --
+[AnyaBoard] exEntitySpawner HAS   : Spawn, SpawnRecord, Despawn
+[AnyaBoard] DynamicEntitySystem via container: not found
+[AnyaBoard] DynamicEntitySystem ? NOT AVAILABLE
+[AnyaBoard] PreventionSpawnSystem HAS    : (none)
+[AnyaBoard] PreventionSpawnSystem missing : RequestSpawn, RequestPreventionUnit, IsSpawnInProgress
+[AnyaBoard] Dump() available: true ? if true, Dump(Game.GetTeleportationFacility()) gives exact signatures
+[AnyaBoard] Paste this whole block back
+[AnyaBoard] ==========================
