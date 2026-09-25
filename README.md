@@ -166,6 +166,21 @@ In game, `GetMod("AnyaBoard"):status()` says what is wrong, and
 `GetMod("AnyaBoard"):bench()` measures spawning, resolution timing and the
 AI command shapes, writing `bench.log` beside the mod.
 
+## Before you put it on a network
+
+The board has **no authentication**, allows any origin, and binds `0.0.0.0`
+by default so the game PC can reach it. Anyone who can reach that port can
+spawn a body next to you, move it, and put words on your screen. That is
+fine on a home network and wrong on anything else:
+
+- Bind it to one interface (`--host 192.168.1.10`), or keep it on a private
+  network such as Tailscale.
+- Don't port-forward it, and don't run it on a shared or public network.
+- Nothing here talks to the internet on its own. The only outbound calls are
+  the ones your brain makes to whatever model endpoint you point it at, and
+  your API key comes from the environment — never from the command line, so
+  it stays out of shell history and process lists.
+
 ## Connecting your own brain
 
 The board is the whole interface: `PATCH /state` to command, `GET
