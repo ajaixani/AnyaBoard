@@ -69,6 +69,15 @@ if not opts.debug then debug = nil end
 local handlers = {}
 function registerForEvent(name, fn) handlers[name] = fn end
 
+-- CET takes hotkeys only while the file loads. Absent under --hostile: some
+-- builds have no registerHotkey, and the mod must load without it.
+local HOTKEYS = {}
+if not opts.hostile then
+  function registerHotkey(id, description, fn)
+    HOTKEYS[id] = { description = description, fn = fn }
+  end
+end
+
 local lines = {}
 print = function(...)
   local parts = {}
@@ -1009,6 +1018,198 @@ Game.GetPlayer = savedPlayer
 Game.FindEntityByID, Game.GetTargetingSystem = savedFind, savedTargeting
 Game.GetStatPoolsSystem, gamedataStatPoolType, GetLocalizedText = nil, nil, nil
 AnyaBoard.lastSpawn = nil
+
+-- === 15d. chat ==========================================================
+-- v0.8: V can talk. What V says goes UP as observed.player.said; the window
+-- shows both sides; six hotkey slots say stored phrases. The mod never
+-- answers. Everything here must hold with ImGui absent, and a throw inside
+-- the window must never leave ImGui with an unclosed Begin.
+realPrint("\n=== 15d. chat ===")
+probeMark = #lines + 1
+
+local function readObserved()
+  local f = realOpen(MODDIR .. "/observed.json", "r")
+  local t = f and f:read("*a") or ""
+  if f then f:close() end
+  return t
+end
+
+-- hotkeys were registered while the file loaded
+local nHot = 0
+for id in pairs(HOTKEYS) do if id:match("^anyaboard_phrase_%d$") then nHot = nHot + 1 end end
+check("six phrase hotkeys registered at load", nHot == 6)
+check("hotkeys are described for the Bindings screen",
+  HOTKEYS.anyaboard_phrase_1 and HOTKEYS.anyaboard_phrase_1.description == "AnyaBoard: say phrase 1")
+
+-- nothing said: the field is absent (an empty Lua table would encode as {})
+AnyaBoard.saidLog, AnyaBoard.chatLog, AnyaBoard.saidSeq = {}, {}, nil
+local obsQuiet = AnyaBoard:observe()
+check("nothing said: observed has no player.said", obsQuiet and obsQuiet.player.said == nil)
+
+-- say()
+check("an empty line says nothing", AnyaBoard:say("   ", "chat") == nil and #AnyaBoard.saidLog == 0)
+realRemove(MODDIR .. "/observed.json")
+local seq1 = AnyaBoard:say("  wait here  ", "chat")
+check("say returns a seq", type(seq1) == "number")
+check("seq starts from the wall clock (survives a mod reload)", seq1 and seq1 > 1600000000)
+check("the line is trimmed", AnyaBoard.saidLog[1].text == "wait here")
+check("the line carries how it was said", AnyaBoard.saidLog[1].via == "chat")
+local saidText = readObserved()
+check("say writes observed.json at once, not on the half-second",
+  saidText:find('"said":[', 1, true) ~= nil and saidText:find('"text":"wait here"', 1, true) ~= nil)
+local seq2 = AnyaBoard:say('he said "hi" \\ 100%', "console")
+check("seq counts up", seq2 == seq1 + 1)
+saidText = readObserved()
+check("quotes and backslashes are escaped on the wire",
+  saidText:find('he said \\"hi\\" \\\\ 100%', 1, true) ~= nil)
+for n = 1, 7 do AnyaBoard:say("line " .. n, "chat") end
+check("only the last few lines ride the wire", #AnyaBoard.saidLog == 5
+  and AnyaBoard.saidLog[5].text == "line 7" and AnyaBoard.saidLog[1].text == "line 3")
+check("said is newest last, seq rising", AnyaBoard.saidLog[5].seq > AnyaBoard.saidLog[4].seq)
+AnyaBoard:say(string.rep("x", 400), "chat")
+check("a very long line is clipped", #AnyaBoard.saidLog[5].text == 280)
+check("what V said is in the chat log under V's name",
+  AnyaBoard.chatLog[1].who == "V" and AnyaBoard.chatLog[1].text == "wait here")
+
+-- hotkeys
+AnyaBoard.saidLog = {}
+HOTKEYS.anyaboard_phrase_2.fn()
+check("a hotkey says its phrase", #AnyaBoard.saidLog == 1
+  and AnyaBoard.saidLog[1].text == "Wait here." and AnyaBoard.saidLog[1].via == "hotkey")
+AnyaBoard.phrases[3] = "  "
+probeMark = #lines + 1
+HOTKEYS.anyaboard_phrase_3.fn()
+check("an empty slot says nothing and says why", #AnyaBoard.saidLog == 1 and saw("is empty", probeMark))
+
+-- phrases persist beside the mod
+AnyaBoard.phrases[1] = "On me."
+check("savePhrases writes phrases.json", AnyaBoard:savePhrases() == true)
+AnyaBoard.phrases[1] = "changed in memory"
+check("loadPhrases brings them back", AnyaBoard:loadPhrases() == true and AnyaBoard.phrases[1] == "On me.")
+do
+  local f = assert(realOpen(MODDIR .. "/phrases.json", "w")); f:write("{not json"); f:close()
+end
+check("a broken phrases.json keeps what is loaded, no throw",
+  pcall(function() return AnyaBoard:loadPhrases() end) and AnyaBoard.phrases[1] == "On me.")
+realRemove(MODDIR .. "/phrases.json")
+check("no phrases.json is not an error", AnyaBoard:loadPhrases() == false)
+
+-- who the on-screen line is from
+AnyaBoard._bodyDisplayName, AnyaBoard.speakerName = nil, ""
+check("speaker falls back to the configured body name", AnyaBoard:speakerFor({}) == AnyaBoard.bodyName)
+AnyaBoard._bodyDisplayName = "Judy Alvarez"
+check("speaker is the live body's own name", AnyaBoard:speakerFor({ flags = {} }) == "Judy Alvarez")
+AnyaBoard.speakerName = "Rook"
+check("config speakerName wins over the body", AnyaBoard:speakerFor({}) == "Rook")
+check("the board's flags.speaker_name wins over both",
+  AnyaBoard:speakerFor({ flags = { speaker_name = "Anya" } }) == "Anya")
+AnyaBoard.speakerName = ""
+
+local shownMessage = nil
+local savedGameChat = Game
+Game = { GetBlackboardSystem = function()
+  return { Get = function() return { SetVariant = function(_, _, v) shownMessage = v end } end }
+end }
+SimpleScreenMessage = { new = function() return {} end }
+GetAllBlackboardDefs = function() return { UI_Notifications = { OnscreenMessage = "osm" } } end
+ToVariant = function(v) return v end
+AnyaBoard.chatLog = {}
+AnyaBoard:onDialogue({ text = "Right behind you.", timeout = 4 }, { flags = {} })
+check("the on-screen line is prefixed with the body's name",
+  shownMessage and shownMessage.message == "[Judy Alvarez] Right behind you.")
+check("her line lands in the chat log",
+  AnyaBoard.chatLog[1] and AnyaBoard.chatLog[1].who == "Judy Alvarez"
+  and AnyaBoard.chatLog[1].text == "Right behind you.")
+Game, SimpleScreenMessage, GetAllBlackboardDefs, ToVariant = savedGameChat, nil, nil, nil
+
+AnyaBoard.chatLogMax = 10
+for n = 1, 25 do AnyaBoard:chatAppend("V", "n" .. n, "player") end
+check("the chat log is capped", #AnyaBoard.chatLog == 10 and AnyaBoard.chatLog[10].text == "n25")
+AnyaBoard.chatLogMax = 60
+
+-- the window
+check("no ImGui: onDraw is a no-op, not a throw", pcall(handlers.onDraw))
+
+local calls, depth, childDepth, scripted, throwIn
+local function fakeImGui()
+  calls, depth, childDepth = {}, 0, 0
+  local function rec(name) calls[name] = (calls[name] or 0) + 1 end
+  return {
+    SetNextWindowSize = function() rec("SetNextWindowSize") end,
+    Begin = function(title) rec("Begin"); depth = depth + 1; calls.title = title; return true end,
+    End = function() rec("End"); depth = depth - 1 end,
+    BeginChild = function() rec("BeginChild"); childDepth = childDepth + 1; return true end,
+    EndChild = function() rec("EndChild"); childDepth = childDepth - 1 end,
+    TextWrapped = function(t)
+      rec("TextWrapped"); calls.lastText = t
+      if throwIn == "TextWrapped" then error("imgui blew up", 0) end
+    end,
+    SetScrollHereY = function() rec("SetScrollHereY") end,
+    SetKeyboardFocusHere = function() rec("SetKeyboardFocusHere") end,
+    PushItemWidth = function() end, PopItemWidth = function() end,
+    SameLine = function() end,
+    CollapsingHeader = function() return false end,
+    IsItemDeactivatedAfterEdit = function() return false end,
+    Button = function(label) rec("Button"); return false end,
+    InputText = function(label, text)
+      rec("InputText")
+      if scripted and label == "##anyaboard_say" then
+        local t = scripted; scripted = nil
+        return t, true
+      end
+      return text, false
+    end,
+  }
+end
+ImGui = fakeImGui()
+ImGuiCond = { FirstUseEver = 4 }
+
+AnyaBoard._overlayOpen = false
+handlers.onDraw()
+check("overlay closed: no window is drawn", calls.Begin == nil)
+
+handlers.onOverlayOpen()
+AnyaBoard.chatLog, AnyaBoard.saidLog = {}, {}
+AnyaBoard:chatAppend("Judy", "100% sure, %s", "body")
+handlers.onDraw()
+check("overlay open: the window is drawn", calls.Begin == 1 and calls.title == "AnyaBoard chat")
+check("Begin/End and BeginChild/EndChild balance", depth == 0 and childDepth == 0
+  and calls.End == 1 and calls.EndChild == 1)
+check("a percent sign reaches ImGui escaped, never as a format",
+  calls.lastText == "Judy: 100%% sure, %%s")
+check("the input box is there with the overlay open", (calls.InputText or 0) >= 1)
+
+scripted = "come here"
+handlers.onDraw()
+check("Enter in the box says the line via chat", #AnyaBoard.saidLog == 1
+  and AnyaBoard.saidLog[1].text == "come here" and AnyaBoard.saidLog[1].via == "chat")
+check("the box is cleared after sending", AnyaBoard._chatInput == "")
+handlers.onDraw()
+check("focus returns to the box after Enter", (calls.SetKeyboardFocusHere or 0) >= 1)
+
+probeMark = #lines + 1
+throwIn = "TextWrapped"
+local okDraw = pcall(handlers.onDraw)
+check("a throw inside the window does not escape onDraw", okDraw)
+check("...and still closes the child and the window", depth == 0 and childDepth == 0)
+check("...and is said once in the log", saw("chat draw error", probeMark))
+throwIn = nil
+frames(30)
+check("the poll loop is untouched by a draw error", AnyaBoard._inited == true)
+
+handlers.onOverlayClose()
+ImGui = fakeImGui()
+handlers.onDraw()
+check("overlay closed again: nothing drawn", calls.Begin == nil)
+AnyaBoard.chatHud = true
+handlers.onDraw()
+check("chatHud draws the log with the overlay closed", calls.Begin == 1 and calls.BeginChild == 1)
+check("...with no input box: there is no keyboard to give it", calls.InputText == nil)
+AnyaBoard.chatHud = false
+
+ImGui, ImGuiCond = nil, nil
+AnyaBoard.saidLog, AnyaBoard.chatLog = {}, {}
+realRemove(MODDIR .. "/observed.json")
 
 -- === 16. bench() ========================================================
 -- The P1 tower tool. It runs on onUpdate across many frames, so the harness

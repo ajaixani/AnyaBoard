@@ -52,6 +52,7 @@ error, and turning the body on under an unchanged mode still takes effect.
 | `body_record` | A TweakDB record, e.g. `Character.Judy`. Refused loudly if TweakDB has no such record |
 | `body_appearance` | A CName, e.g. `judy_default`. Without it the game picks, and it may pick a quest outfit |
 | `follow_distance` | Metres, for `follow` |
+| `speaker_name` | *(v0.8)* Who the on-screen line is from. `null` or absent: the live body's own name |
 
 These live on the board rather than in the mod so they survive a mod reload.
 
@@ -86,7 +87,10 @@ every report would re-dispatch the mode.
     "pos": [-1286.02, 1506.95, 45.0],
     "heading": 0.01,
     "view_heading": 0.01,
-    "in_combat": false
+    "in_combat": false,
+    "said": [
+      { "seq": 1790000041, "text": "wait here", "via": "hotkey", "clock": 31.2 }
+    ]
   },
   "body": {
     "live": true,
@@ -118,6 +122,28 @@ counter-clockwise from +x. `distance` is on the ground plane; `dz` is the
 height difference (positive means the body is higher). `bearing` is where
 something is relative to **where the player is looking**: 0 ahead, +π/2 to
 their left, −π/2 to their right.
+
+### What the player said *(v0.8)*
+
+`player.said` is the last few lines the player spoke to the body — typed in
+the mod's chat window (`via: "chat"`), a phrase hotkey (`"hotkey"`), or
+`GetMod("AnyaBoard"):say("…")` (`"console"`) — **newest last**. It is absent
+until something has been said. The mod writes an observation the moment a
+line is said rather than waiting for the half-second.
+
+- `seq` starts from the wall clock when the mod loads and counts up, so it
+  keeps rising across **Reload all mods**. Keep the last `seq` you handled
+  and answer only what is greater.
+- The list is a short window, not a queue: a line stays in it after you have
+  answered. A driver that has just started should treat what is already
+  there as old news unless its `clock` is within a few seconds of the
+  observation's `clock`.
+- Answer the way a body always speaks: `PATCH /state` with `dialogue.text`.
+  The board bumps `dialogue.seq` only when the **text changes**; to say the
+  same words twice, send `dialogue.seq` yourself, one higher than the last.
+
+The mod neither interprets nor answers these lines. A driver that ignores
+the field sees exactly the v0.7 protocol.
 
 `body.live` is false when no body is in the world. `look_at` is absent when
 the player is not looking at anything; it covers devices and props as well

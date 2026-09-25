@@ -1,5 +1,5 @@
 --[[
-  AnyaBoard — Cyberpunk 2077 CET reader / executor (v0.6)
+  AnyaBoard — Cyberpunk 2077 CET reader / executor (v0.8)
 
   Install:
     <Cyberpunk 2077>/bin/x64/plugins/cyber_engine_tweaks/mods/AnyaBoard/init.lua
@@ -12,6 +12,13 @@
 
   DIRECT HTTP (does not work on stock CET — no sockets, io.popen stripped):
     useFile = false, boardUrl = "http://<board-host>:8787"
+
+  v0.8 — a way to talk: a chat window in the CET overlay (type a line, see
+    both sides), six hotkey phrase slots (bind them in CET > Bindings, edit
+    the words in the window), and what V said going UP the wire as
+    observed.player.said for whatever is driving to answer. The on-screen
+    line is prefixed with the body's name, not a fixed one. Additive: a
+    driver that reads none of it sees v0.7.
 
   v0.7 — perception: every 500ms the mod writes observed.json beside
     state.json (where V is and which way, where this body is relative to
@@ -106,7 +113,34 @@ AnyaBoard = {
   enableObserve = true,
   observeIntervalMs = 500,
 
+  -- === CHAT (v0.8) =======================================================
+  -- A window in the CET overlay: both sides of the conversation, a box to
+  -- type in. What V says goes up in observed.json as player.said; the mod
+  -- never answers — whatever drives the board does, through `dialogue`.
+  enableChat = true,
+  chatHud = false,       -- true = keep the log on screen with the overlay closed
+  chatLogMax = 60,       -- lines kept in the window
+  saidKeep = 5,          -- recent lines carried in observed.player.said
+  saidMaxChars = 280,
+  playerName = "V",
+
+  -- Who the on-screen line is from. "" = the live body's own name. The board
+  -- can set it for a session: flags.speaker_name.
+  speakerName = "",
+
+  -- Hotkey phrases. Bind "AnyaBoard: say phrase N" in CET > Bindings; edit the
+  -- words in the chat window (saved to phrases.json beside this file). An
+  -- empty slot does nothing. The slot COUNT is fixed at load: CET only takes
+  -- hotkey registrations while the file is loading.
+  phrases = {
+    "Follow me.", "Wait here.", "Stay close.",
+    "What do you see?", "Talk to me.", "We're leaving.",
+  },
+
   -- runtime
+  chatLog = {},
+  saidLog = {},
+  saidSeq = nil,
   lastSeq = -1,
   lastDialogueSeq = -1,
   lastMode = nil,
@@ -553,12 +587,15 @@ function AnyaBoard:onDialogue(dialogue, state)
   end
   logf('dialogue [%s]: "%s"', tostring(dialogue.emotion or ""), text)
 
+  local speaker = self:speakerFor(state)
+  safe(function() self:chatAppend(speaker, text, "body") end)
+
   safe(function()
     if not Game or not Game.GetBlackboardSystem then
       return
     end
     local msg = SimpleScreenMessage.new()
-    msg.message = "[Anya] " .. text
+    msg.message = "[" .. speaker .. "] " .. text
     msg.isShown = true
     msg.duration = tonumber(dialogue.timeout) or 6.0
     local bb = Game.GetBlackboardSystem():Get(GetAllBlackboardDefs().UI_Notifications)
@@ -2251,6 +2288,222 @@ local function json_encode(v)
   return json_encode(tostring(v))
 end
 
+-- ---------------------------------------------------------------------------
+-- Chat (v0.8) — a way to talk to whatever is driving.
+--
+-- DOWN the wire nothing is new: the driver answers through `dialogue`, as it
+-- always has. UP the wire there is one new field, observed.player.said: the
+-- last few things V said, newest last, each { seq, text, via, clock }.
+--
+--   seq    starts from the wall clock at load, then counts up — so it keeps
+--          rising across "Reload all mods" and a driver comparing against the
+--          last seq it handled never mistakes a new line for an old one.
+--   via    "chat" | "hotkey" | "console"
+--   clock  this mod's clock when it was said (compare with observed.clock to
+--          tell a fresh line from a stale one after a driver restart).
+--
+-- The mod never answers and never interprets. It is a mouth for V and a log.
+-- ---------------------------------------------------------------------------
+
+local function trim(s)
+  return (tostring(s or ""):gsub("^%s+", ""):gsub("%s+$", ""))
+end
+
+-- ImGui's text calls take a printf format in some CET builds. A typed "%s"
+-- must reach the screen as text, never as a format.
+local function imgui_text(s)
+  return (tostring(s or ""):gsub("%%", "%%%%"))
+end
+
+function AnyaBoard:speakerFor(state)
+  local flags = type(state) == "table" and type(state.flags) == "table" and state.flags or {}
+  local name = flags.speaker_name
+  if type(name) ~= "string" or name == "" then name = self.speakerName end
+  if type(name) ~= "string" or name == "" then name = self._bodyDisplayName end
+  if type(name) ~= "string" or name == "" then name = self.bodyName end
+  if type(name) ~= "string" or name == "" then name = "Companion" end
+  return name
+end
+
+function AnyaBoard:chatAppend(who, text, kind)
+  local log_ = self.chatLog
+  log_[#log_ + 1] = { who = tostring(who or "?"), text = tostring(text or ""), kind = kind or "body" }
+  local max = tonumber(self.chatLogMax) or 60
+  while #log_ > max do table.remove(log_, 1) end
+  self._chatScroll = true
+end
+
+-- V says a line. Returns its seq, or nil when there was nothing to say.
+function AnyaBoard:say(text, via)
+  text = trim(text)
+  if text == "" then return nil end
+  local maxChars = tonumber(self.saidMaxChars) or 280
+  if #text > maxChars then text = text:sub(1, maxChars) end
+
+  if self.saidSeq == nil then
+    local ok, now = safe(os.time)
+    self.saidSeq = (ok and tonumber(now)) or 0
+  end
+  self.saidSeq = self.saidSeq + 1
+
+  local said = self.saidLog
+  said[#said + 1] = { seq = self.saidSeq, text = text, via = via or "console",
+                      clock = self._clock or 0 }
+  local keep = tonumber(self.saidKeep) or 5
+  while #said > keep do table.remove(said, 1) end
+
+  self:chatAppend(self.playerName or "V", text, "player")
+  log_text("said (" .. tostring(via or "console") .. "):", text)
+
+  -- Do not wait for the half-second cadence: a line V just said should be on
+  -- the wire now. A failure here is the observe path's to report, not ours.
+  if self.enableObserve then
+    safe(function() self:writeObserved() end)
+    self._observeTimer = 0
+  end
+  return self.saidSeq
+end
+
+function AnyaBoard:sayPhrase(n)
+  local phrase = self.phrases and self.phrases[tonumber(n) or 0]
+  if type(phrase) ~= "string" or trim(phrase) == "" then
+    logf("phrase %s is empty — set it in the chat window", tostring(n))
+    return nil
+  end
+  return self:say(phrase, "hotkey")
+end
+
+-- phrases.json beside this file: a JSON list of strings, one per slot.
+function AnyaBoard:loadPhrases()
+  local body = read_file("phrases.json")
+  if not body then return false end           -- never saved: keep the defaults
+  local ok, list = safe(json_decode, body)
+  if not ok or type(list) ~= "table" then
+    log("phrases.json is not a JSON list — keeping the defaults")
+    return false
+  end
+  for i = 1, #self.phrases do
+    if type(list[i]) == "string" then self.phrases[i] = list[i] end
+  end
+  logf("phrases loaded (%s slots)", tostring(#self.phrases))
+  return true
+end
+
+function AnyaBoard:savePhrases()
+  local out = {}
+  for i = 1, #self.phrases do out[i] = tostring(self.phrases[i] or "") end
+  local ok, err = safe(function()
+    local f = io.open("phrases.json", "w")
+    if f == nil then error("io.open returned nil") end
+    f:write(json_encode(out) .. "\n")
+    f:close()
+  end)
+  if not ok then
+    log_text("phrases not saved:", err)
+    return false
+  end
+  self._phrasesDirty = false
+  return true
+end
+
+-- The window's contents. Begin/End live in drawChat, so a throw in here can
+-- never leave ImGui with an unclosed window; the child region is closed the
+-- same way, by its own caller.
+function AnyaBoard:drawChatLog()
+  for _, line in ipairs(self.chatLog) do
+    ImGui.TextWrapped(imgui_text(line.who .. ": " .. line.text))
+  end
+  if #self.chatLog == 0 then
+    ImGui.TextWrapped("Nothing said yet. Type below, or bind a phrase key.")
+  end
+  if self._chatScroll then
+    self._chatScroll = false
+    safe(ImGui.SetScrollHereY, 1.0)
+  end
+end
+
+function AnyaBoard:drawChatInput()
+  local ENTER = (ImGuiInputTextFlags and ImGuiInputTextFlags.EnterReturnsTrue) or 32
+  if self._chatRefocus then
+    self._chatRefocus = false
+    safe(ImGui.SetKeyboardFocusHere)
+  end
+  safe(ImGui.PushItemWidth, -60)
+  local text, entered = ImGui.InputText("##anyaboard_say", self._chatInput or "",
+    (tonumber(self.saidMaxChars) or 280) + 1, ENTER)
+  safe(ImGui.PopItemWidth)
+  if type(text) == "string" then self._chatInput = text end
+  ImGui.SameLine()
+  local clicked = ImGui.Button("Send")
+  if (entered or clicked) and trim(self._chatInput) ~= "" then
+    self:say(self._chatInput, "chat")
+    self._chatInput = ""
+    self._chatRefocus = true     -- Enter drops focus; take it back next frame
+  end
+end
+
+function AnyaBoard:drawChatPhrases()
+  if not ImGui.CollapsingHeader("Hotkey phrases") then return end
+  ImGui.TextWrapped("Bind the keys in CET > Bindings. They work with this overlay closed.")
+  for i = 1, #self.phrases do
+    safe(ImGui.PushItemWidth, -60)
+    local text = ImGui.InputText("##anyaboard_phrase" .. i, self.phrases[i] or "", 121)
+    safe(ImGui.PopItemWidth)
+    if type(text) == "string" and text ~= self.phrases[i] then
+      self.phrases[i] = text
+      self._phrasesDirty = true
+    end
+    local okD, done = safe(ImGui.IsItemDeactivatedAfterEdit)
+    if okD and done and self._phrasesDirty then self:savePhrases() end
+    ImGui.SameLine()
+    if ImGui.Button("Say##anyaboard_say" .. i) then self:sayPhrase(i) end
+  end
+  if self._phrasesDirty and ImGui.Button("Save phrases") then self:savePhrases() end
+end
+
+function AnyaBoard:drawChat()
+  if not self.enableChat or type(ImGui) ~= "table" then return end
+  if not self._overlayOpen and not self.chatHud then return end
+
+  if ImGuiCond then safe(ImGui.SetNextWindowSize, 440, 360, ImGuiCond.FirstUseEver) end
+  local okBegin, shown = safe(ImGui.Begin, "AnyaBoard chat")
+  if not okBegin then
+    error("ImGui.Begin threw: " .. tostring(shown), 0)   -- nothing was opened
+  end
+
+  local bodyErr = nil
+  if shown ~= false then
+    local okBody, err = pcall(function()
+      -- Overlay closed means no keyboard: the log alone, the full height.
+      local typing = self._overlayOpen == true
+      ImGui.BeginChild("anyaboard_log", 0, typing and 200 or 0, true)
+      local okLog, errLog = pcall(function() self:drawChatLog() end)
+      ImGui.EndChild()
+      if not okLog then error(errLog, 0) end
+      if typing then
+        self:drawChatInput()
+        self:drawChatPhrases()
+      end
+    end)
+    if not okBody then bodyErr = err end
+  end
+  safe(ImGui.End)
+  if bodyErr ~= nil then error(bodyErr, 0) end
+end
+
+-- CET takes hotkey registrations only while this file is loading, so they
+-- are made here and not in onInit. Absent on some builds: then there are
+-- simply no hotkeys, and say() / the chat window still work.
+if type(registerHotkey) == "function" then
+  for slot = 1, #AnyaBoard.phrases do
+    safe(registerHotkey, "anyaboard_phrase_" .. slot, "AnyaBoard: say phrase " .. slot,
+      function()
+        local ok, err = pcall(function() AnyaBoard:sayPhrase(slot) end)
+        if not ok then log_text("phrase hotkey failed:", err) end
+      end)
+  end
+end
+
 -- CET is LuaJIT (5.1): math.atan takes ONE argument and silently ignores a
 -- second, so atan(y, x) there returns atan(y). math.atan2 is the 5.1 name; the
 -- harness's newer Lua only has the two-argument atan.
@@ -2383,12 +2636,19 @@ function AnyaBoard:observe()
     sources = sources,
   }
 
+  -- What V said, newest last. Omitted when nothing has been said: the
+  -- encoder writes an empty table as {}, and this field is a list.
+  if self.saidLog and #self.saidLog > 0 then
+    obs.player.said = self.saidLog
+  end
+
   local ent = self:resolveEntity(self.lastSpawn)
   if ent ~= nil then
     local b = obs.body
     b.live = true
     b.record = record_name_of(first_of({ { "rid", function() return ent:GetRecordID() end } }))
     b.name = localized_name(ent)
+    if type(b.name) == "string" and b.name ~= "" then self._bodyDisplayName = b.name end
     b.pos = xyz(first_of({ { "pos", function() return ent:GetWorldPosition() end } }))
     local bfwd = first_of({ { "fwd", function() return ent:GetWorldForward() end } })
     b.heading = bfwd and atan2(bfwd.y, bfwd.x) or nil
@@ -2753,7 +3013,7 @@ registerForEvent("onInit", function()
   AnyaBoard.updateErrCount = 0
   AnyaBoard._inited = true   -- FIRST. v0.3 set this last and died before it.
 
-  log("init — AnyaBoard v0.7 (body + perception; writes observed.json)")
+  log("init — AnyaBoard v0.8 (body + perception + chat; writes observed.json)")
   logf("polling every %sms via engine delta on onUpdate",
     tostring(AnyaBoard.pollIntervalMs))
   logf("body control: enableBody=%s (the board can turn this on)",
@@ -2763,6 +3023,11 @@ registerForEvent("onInit", function()
   local ok, err = safe(function() AnyaBoard:diagnose() end)
   if not ok then
     logf("diagnose() failed (non-fatal, loop still runs): %s", tostring(err))
+  end
+
+  local okP, errP = safe(function() AnyaBoard:loadPhrases() end)
+  if not okP then
+    log_text("phrases not loaded (non-fatal):", errP)
   end
 
   -- Immediate first read; a failure here must not stop the loop either.
@@ -2807,6 +3072,24 @@ registerForEvent("onUpdate", function(delta)
   end
 end)
 
+-- The chat window. onDraw runs every frame whether or not the overlay is
+-- open, so the open/close events decide whether there is anything to draw.
+registerForEvent("onOverlayOpen", function() AnyaBoard._overlayOpen = true end)
+registerForEvent("onOverlayClose", function() AnyaBoard._overlayOpen = false end)
+
+registerForEvent("onDraw", function()
+  if not AnyaBoard._inited then
+    return
+  end
+  local ok, err = pcall(function() AnyaBoard:drawChat() end)
+  if not ok then
+    AnyaBoard.drawErrCount = (AnyaBoard.drawErrCount or 0) + 1
+    if AnyaBoard.drawErrCount == 1 or AnyaBoard.drawErrCount % 600 == 0 then
+      log_text("chat draw error (window skipped):", err)
+    end
+  end
+end)
+
 registerForEvent("onShutdown", function()
   AnyaBoard._inited = false
   -- "Reload all mods" fires this. The new instance cannot find bodies spawned by
@@ -2822,6 +3105,8 @@ end)
 --   GetMod("AnyaBoard"):probeCaps()   -- spawn / move / perception on this build
 --   GetMod("AnyaBoard"):probeAMM()    -- AMM's API, if AMM is installed
 --   GetMod("AnyaBoard"):tick()        -- force one read
+--   GetMod("AnyaBoard"):say("wait here")  -- say a line without the chat window
+--   GetMod("AnyaBoard"):sayPhrase(2)      -- what hotkey 2 does
 --
 -- Getting a body (look at an NPC first):
 --   GetMod("AnyaBoard"):inspectTarget()  -- read what identifies that NPC

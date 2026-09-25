@@ -26,4 +26,5 @@ jobs:
           python-version: "3.12"
       - run: pip install fastapi uvicorn jsonschema httpx httpx2
       - run: python tools/smoke_board.py
+      - run: python tools/smoke_brain.py
       - run: python -c "import ast,pathlib; [ast.parse(p.read_text()) for p in pathlib.Path('.').rglob('*.py')]"

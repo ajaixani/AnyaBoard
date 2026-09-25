@@ -22,6 +22,9 @@ your program  ──PATCH /state──>  board  ──state.json──>  CET mod
 - **Reports** come back twice a second: where the player is and which way
   they face, where the body is relative to them, its health, whether the
   player is in a fight, what they are looking at.
+- **You can talk to her.** A chat window in the CET overlay and six hotkey
+  phrases put what you say on the wire; whatever is driving answers through
+  the body's on-screen line. The mod itself never answers.
 
 Why a file relay in the middle: a CET mod cannot open a socket, but it can
 read and write inside its own mod folder. A small PowerShell script carries
@@ -58,7 +61,7 @@ uv run python main.py --host 0.0.0.0 --port 8787
 folder** — then run it and leave it open. No Python needed on Windows.
 
 **4. In game:** load a save, open the CET console, **Reload all mods**.
-You should see `init — AnyaBoard v0.7` and then ticks.
+You should see `init — AnyaBoard v0.8` and then ticks.
 
 **5. Drive her** from the board machine:
 
@@ -82,6 +85,42 @@ python3 examples/simple_brain.py --board http://127.0.0.1:8787
 Fifty lines, standard library only: she keeps pace, holds when you get far
 enough ahead, and joins your fights. Read it as the protocol in miniature.
 
+**7. Or give her a voice:**
+
+```bash
+python3 examples/companion_brain.py --api chat \
+    --base-url http://127.0.0.1:1234/v1 --model <the model your server has loaded>
+```
+
+Open the CET overlay and there is an **AnyaBoard chat** window: type a line,
+press Enter, and she answers on screen. Bind the six phrase keys in CET's
+**Bindings** tab ("AnyaBoard: say phrase 1…6") and you can talk to her
+without opening anything; edit the phrases in the same window.
+
+`companion_brain.py` is one file with no dependencies. A reflex keeps her
+walking and fighting with no model at all; a language model is woken only
+when something happens (you spoke, she arrived, a fight started or ended,
+you have been staring at her) and answers with one line and, if you asked,
+a new stance. She keeps a small notebook between sessions. Who she is lives
+in `examples/persona.md` — rewrite it.
+
+It speaks three wire formats, so nobody is locked out:
+
+| `--api` | Talks to | Notes |
+|---|---|---|
+| `chat` | `/chat/completions` — LM Studio, Ollama, llama.cpp, OpenRouter, most vendors | default base `http://127.0.0.1:1234/v1` |
+| `anthropic` | Anthropic's `/v1/messages` | system prompt marked cacheable; a thinking model spends `--max-tokens` before it writes, so it defaults to 4096 here |
+| `responses` | `/responses`, chained by `previous_response_id` | the server keeps the conversation: she picks up where you left off across restarts, and each turn sends only what is new |
+
+The API key is read from `COMPANION_API_KEY` (or `OPENAI_API_KEY` /
+`ANTHROPIC_API_KEY`), never from the command line. `--max-calls-per-hour`
+and `--min-gap-s` keep a paid endpoint from running away with your money.
+
+About `responses`: point it at a server you run and the continuity is yours
+to keep. With a hosted vendor the stored conversation lives on their
+servers, and a chained turn is still billed for the context it builds on —
+chaining saves bandwidth and latency, prompt caching is what saves money.
+
 ## What's here
 
 | Path | What |
@@ -91,8 +130,10 @@ enough ahead, and joins your fights. Read it as the protocol in miniature.
 | `Dockerfile`, `docker-compose.yml` | The board as a container, up only when you want it |
 | `relay/` | The Windows relay, both directions, in PowerShell |
 | `tools/boardctl.py` | Drive and watch the board from a terminal |
-| `tools/cet_harness.lua` | Runs the mod outside the game in a stubbed CET sandbox — 210 checks |
+| `tools/cet_harness.lua` | Runs the mod outside the game in a stubbed CET sandbox — 254 checks |
 | `examples/simple_brain.py` | A tiny program that drives a body |
+| `examples/companion_brain.py`, `persona.md` | A companion who answers: reflex + a language model, three vendor formats |
+| `tools/smoke_brain.py` | The companion's whole loop against the real board, no game or model needed |
 | `docs/PROTOCOL.md` | Every field, both directions |
 | `docs/CET-NOTES.md` | What CET does and does not allow, learned the hard way |
 | `docs/probes/` | Raw in-game measurements behind the design |
@@ -117,7 +158,8 @@ lua tools/cet_harness.lua cet/AnyaBoard/init.lua
 
 The harness stubs CET at its worst — `io` chrooted to the mod folder, no
 `io.popen`, no `json`, no `debug` — then drives `onInit` and thousands of
-frames, the board-to-body path, the perception writer and the spawn bench.
+frames, the board-to-body path, the perception writer, the chat window
+(against a fake ImGui) and the spawn bench.
 Every trip to the game PC it saves is worth it.
 
 In game, `GetMod("AnyaBoard"):status()` says what is wrong, and

@@ -13,6 +13,7 @@ cet/AnyaBoard/state.json
 cet/AnyaBoard/state.json.tmp
 cet/AnyaBoard/observed.json
 cet/AnyaBoard/bench.log
+cet/AnyaBoard/phrases.json
 
 # Harness scratch
 .cet_test/
@@ -22,3 +23,6 @@ cet/AnyaBoard/bench.log
 .idea/
 .vscode/
 *.swp
+
+# companion_brain.py keeps its notebook, recent exchanges and chain id here
+.companion/
